@@ -1,0 +1,57 @@
+@client.command()
+
+async def check(ctx, ip: str=None):
+
+    if ip is None: await ctx.send("Please sepcify an IP address");return
+
+    else:
+
+        try:
+
+            with requests.session() as ses:
+
+                resp = ses.get(f'https://ipinfo.io/{ip}/json')
+
+                if "Wrong ip" in resp.text:
+
+                    await ctx.send("Invalid IP address")
+
+                    return
+
+                else:
+
+                    try:
+
+                        j = resp.json()
+
+                        embed= discord.Embed(color=discord.Colour.red(), title=f"INFO", timestamp=datetime.datetime.utcnow())
+
+                        embed.add_field(name=f'IP', value=f'{ip}', inline=True)
+
+                        embed.add_field(name=f'City', value=f'{j["city"]}', inline=True)
+
+                        embed.add_field(name=f'Region', value=f'{j["region"]}', inline=True)
+
+                        embed.add_field(name=f'Country', value=f'{j["country"]}', inline=True)
+
+                        embed.add_field(name=f'Coordinates', value=f'{j["loc"]}', inline=True)
+
+                        embed.add_field(name=f'Postal', value=f'{j["postal"]}', inline=True)
+
+                        embed.add_field(name=f'Timezone', value=f'{j["timezone"]}', inline=True)
+
+                        embed.add_field(name=f'Organization', value=f'{j["org"]}', inline=True)
+
+                        embed.set_footer(text="Result")
+
+                        await ctx.send(embed=embed)
+
+                    except discord.HTTPException:
+
+                        await ctx.send(f'{ip} Info\n\nCity: {j["city"]}\nRegion: {j["region"]}\nCountry: {j["country"]}\nCoordinates: {j["loc"]}\nPostal: {j["postal"]}\nTimezone: {j["timezone"]}\nOrganization: {j["org"]}')
+
+        except Exception as e:
+
+            await ctx.send(f"Error: {e}")   
+
+.
